@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniHarutoAI</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: #fff8eb;
+      --ink: #1b1f23;
+      --muted: #60676f;
+      --line: #d7c7ad;
+      --accent: #0f766e;
+      --accent-2: #d97706;
+      --user: #d1fae5;
+      --assistant: #fef3c7;
+      --shadow: 0 16px 30px rgba(27, 31, 35, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Space Mono", "Noto Sans JP", monospace;
+      background: radial-gradient(circle at 10% 5%, #fffdf7 0, #f4efe6 45%, #ece0cb 100%);
+    }
+
+    .app {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .side {
+      padding: 14px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 14px;
+    }
+
+    .sessions {
+      display: grid;
+      gap: 8px;
+      max-height: 68vh;
+      overflow: auto;
+    }
+
+    .session-btn,
+    .new-btn,
+    .send-btn {
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .session-btn {
+      text-align: left;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .session-btn.active {
+      border-color: var(--accent);
+      background: #ecfdf5;
+    }
+
+    .session-btn:hover,
+    .new-btn:hover,
+    .send-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .new-btn {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    .chat {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 82vh;
+    }
+
+    .chat-header {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      background: #fef7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      padding: 4px 8px;
+    }
+
+    .messages {
+      padding: 14px;
+      overflow: auto;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .msg {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .msg.user {
+      background: var(--user);
+    }
+
+    .msg.assistant {
+      background: var(--assistant);
+    }
+
+    .composer {
+      border-top: 1px solid var(--line);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 70px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 10px;
+      font: inherit;
+      background: #fff;
+    }
+
+    .send-btn {
+      padding: 0 16px;
+      border: none;
+      background: var(--accent-2);
+      color: white;
+      border-radius: 10px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .chat {
+        min-height: 72vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel side">
+      <h1>MiniHarutoAI</h1>
+      <div class="status" id="status">loading...</div>
+      <button id="new-chat" class="new-btn">New Chat</button>
+      <div class="sessions" id="sessions"></div>
+    </aside>
+
+    <main class="panel chat">
+      <div class="chat-header">
+        <div>
+          <strong>Chat</strong>
+          <div class="meta" id="session-id">Session: -</div>
+        </div>
+        <span class="badge" id="provider-badge">provider: -</span>
+      </div>
+
+      <section class="messages" id="messages"></section>
+
+      <form class="composer" id="composer">
+        <textarea id="input" placeholder="Ask anything. Shift+Enter for new line."></textarea>
+        <button class="send-btn" type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

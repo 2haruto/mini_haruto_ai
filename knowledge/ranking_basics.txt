@@ -1,0 +1,2 @@
+Search ranking fundamentals
+Ranking should separate candidate generation and scoring. Candidate generation optimizes recall and speed. Scoring optimizes relevance with term frequency, inverse document frequency, freshness, and personalization.

@@ -1,0 +1,2 @@
+Interview prep notes
+For engineering interviews, explain why each data structure is selected, what complexity it gives, and what tradeoff is accepted. Focus on production constraints, not only algorithm theory.

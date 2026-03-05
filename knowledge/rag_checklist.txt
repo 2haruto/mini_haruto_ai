@@ -1,0 +1,2 @@
+RAG reliability checklist
+Retrieval augmented generation should surface document ids, avoid fabricated citations, and provide fallback answers when no relevant context is found.
