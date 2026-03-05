@@ -7,7 +7,8 @@ import math
 import re
 
 
-TOKEN_PATTERN = re.compile(r"[a-z0-9_]+")
+LATIN_TOKEN_PATTERN = re.compile(r"[a-z0-9_]+")
+CJK_BLOCK_PATTERN = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]+")
 
 
 @dataclass(frozen=True)
@@ -50,17 +51,31 @@ class KnowledgeBase:
             tokens = self._tokenize(f"{title} {body}")
             tf = Counter(tokens)
             self.doc_term_freqs[doc.doc_id] = tf
-            self.doc_lengths[doc.doc_id] = len(tokens)
+            self.doc_lengths[doc.doc_id] = max(len(tokens), 1)
             total_terms += len(tokens)
 
             for term in tf:
                 self.doc_freqs[term] += 1
 
-        self.avg_doc_length = total_terms / max(len(self.docs), 1)
+        avg = total_terms / max(len(self.docs), 1)
+        self.avg_doc_length = max(avg, 1.0)
 
     @staticmethod
     def _tokenize(text: str) -> list[str]:
-        return TOKEN_PATTERN.findall(text.lower())
+        tokens = LATIN_TOKEN_PATTERN.findall(text.lower())
+
+        for block in CJK_BLOCK_PATTERN.findall(text):
+            if not block:
+                continue
+
+            tokens.append(block)
+
+            # Add bigram tokens so Japanese queries can match partial phrases.
+            if len(block) >= 2:
+                for i in range(len(block) - 1):
+                    tokens.append(block[i : i + 2])
+
+        return tokens
 
     def search(self, query: str, top_k: int = 3) -> list[KnowledgeDoc]:
         query_terms = self._tokenize(query)

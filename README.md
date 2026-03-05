@@ -22,7 +22,8 @@ This project is designed as a portfolio MVP to show:
 - Web chat UI (`web/index.html`, `web/app.js`)
 - Session and message persistence with SQLite (`app/db.py`)
 - Provider switch: `mock`, `openai`, `gemini` (`app/providers.py`)
-- RAG from local text files in `knowledge/*.txt` (`app/rag.py`)
+- Lightweight RAG from local text files in `knowledge/*.txt` (`app/rag.py`)
+- Japanese-aware tokenization (CJK block + bigram) for better local retrieval
 - Citation ids returned in chat API response
 
 ## Architecture
@@ -100,10 +101,11 @@ Request body for `POST /api/chat`:
 - Why SQLite was chosen first: fastest path to MVP with persistent memory.
 - Why RAG was kept lightweight: validate retrieval flow before vector DB complexity.
 - Why `mock` mode exists: local testing without API key cost.
+- Why Japanese bigram tokenization was chosen first: no extra dependency and fast iteration.
 
 ## Next Improvements
 
-- Japanese tokenization for better RAG recall
 - Streaming responses (Server-Sent Events)
 - Auth and per-user data separation
 - Automated tests for service and repository layers
+- Vector search backend for larger knowledge bases
