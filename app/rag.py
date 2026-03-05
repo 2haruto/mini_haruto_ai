@@ -9,6 +9,15 @@ import re
 
 LATIN_TOKEN_PATTERN = re.compile(r"[a-z0-9_]+")
 CJK_BLOCK_PATTERN = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]+")
+TEXT_ENCODINGS = (
+    "utf-8",
+    "utf-8-sig",
+    "cp932",
+    "shift_jis",
+    "utf-16",
+    "utf-16-le",
+    "utf-16-be",
+)
 
 
 @dataclass(frozen=True)
@@ -29,6 +38,17 @@ class KnowledgeBase:
         self._docs_by_id: dict[str, KnowledgeDoc] = {}
         self._load()
 
+    @staticmethod
+    def _read_text_with_fallback(file_path: Path) -> str:
+        for encoding in TEXT_ENCODINGS:
+            try:
+                return file_path.read_text(encoding=encoding)
+            except UnicodeDecodeError:
+                continue
+
+        # Last fallback: keep app running even if file bytes are mixed/invalid.
+        return file_path.read_text(encoding="utf-8", errors="replace")
+
     def _load(self) -> None:
         if not self.root_dir.exists():
             self.root_dir.mkdir(parents=True, exist_ok=True)
@@ -39,7 +59,7 @@ class KnowledgeBase:
 
         total_terms = 0
         for file_path in text_files:
-            raw_text = file_path.read_text(encoding="utf-8")
+            raw_text = self._read_text_with_fallback(file_path)
             lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
             title = lines[0] if lines else file_path.stem
             body = " ".join(lines[1:]) if len(lines) > 1 else ""
